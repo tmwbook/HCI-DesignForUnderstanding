@@ -1,0 +1,31 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: rgb(66, 66, 66);
+    color: rgb(214, 214, 214);
+}
+
+body p {
+    max-width: 55em;
+    margin-right: auto;
+    margin-left: auto;
+    padding-right: 3em;
+    padding-left: 3em;
+}
+
+footer {
+    background: rgb(37, 37, 37);
+    margin-top: 2em;
+    padding-bottom: 10em;
+    padding-top: 1em;
+    text-align: center;
+}
+
+footer p {
+    width: 80%;
+    margin-right: auto;
+    margin-left: auto;
+}
