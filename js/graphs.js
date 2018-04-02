@@ -45,6 +45,9 @@ var pieChart = function(sketch) {
 
     this.resetButton;
     this.genderFilterButton;
+    this.politicalFilterButton;
+    this.founderFilterButton;
+    this.after2000FilterButton;
     
 /*
     this.merge = function(arr, low, mid, high) {
@@ -89,17 +92,47 @@ var pieChart = function(sketch) {
         sketch.fetchData(assignJSON);
 
         resetButton = sketch.createButton('Reset');
-        resetButton.position(height/2, width/2 - 40);
-        resetButton.size(40, 40);
+        resetButton.position(height/2, width/2 - 60);
+        resetButton.size(80, 60);
         resetButton.mousePressed(sketch.resetLists);
 
         genderFilterButton = sketch.createButton('Sex');
         genderFilterButton.position(height/2, width/2);
-        genderFilterButton.size(40, 40);
+        genderFilterButton.size(80, 60);
         genderFilterButton.mousePressed(function (){
             sketch.resetLists();
             sketch.filterData(function (x){
                 return x['point']['gender']==='male';
+            });
+        });
+
+        politicalFilterButton = sketch.createButton('Political');
+        politicalFilterButton.position(height/2, width/2+60);
+        politicalFilterButton.size(80, 60);
+        politicalFilterButton.mousePressed(function (){
+            sketch.resetLists();
+            sketch.filterData(function (x){
+                return x['point']['was political'];
+            });
+        });
+
+        founderFilterButton = sketch.createButton('Was Founder of Company');
+        founderFilterButton.position(height/2, width/2+120);
+        founderFilterButton.size(80, 60);
+        founderFilterButton.mousePressed(function (){
+            sketch.resetLists();
+            sketch.filterData(function (x){
+                return x['point']['was founder'];
+            });
+        });
+
+        after2000FilterButton = sketch.createButton('Company Founded Before 2000');
+        after2000FilterButton.position(height/2, width/2+180);
+        after2000FilterButton.size(80, 60);
+        after2000FilterButton.mousePressed(function (){
+            sketch.resetLists();
+            sketch.filterData(function (x){
+                return x['point']['founded']<2000;
             });
         });
         //mergeSort(testSort, 0, testSort.length);
@@ -131,8 +164,8 @@ var pieChart = function(sketch) {
      * @param {point} point a point object
      */
     sketch.centralRandom = function(point){
-        var randX = Math.floor(Math.random() * (width/4+1));
-        var randY = Math.floor(Math.random() * (height/4+1));
+        var randX = Math.floor(Math.random() * (width/2+1)+width/4);
+        var randY = Math.floor(Math.random() * (height/2+1));
         var aPoint = {
             'loc' : [randX, randY],
             'point' : point,
@@ -141,7 +174,7 @@ var pieChart = function(sketch) {
     }
 
     sketch.draw = function() {
-        sketch.background(70, 70, 70);        
+        sketch.background(66, 66, 66);        
         for(var i=0; i<activePoints.length; i++){
             p = activePoints[i];
             c = (p['point']['gender']==="male") ? sketch.color(3,169,244) : sketch.color(255,64,129);
