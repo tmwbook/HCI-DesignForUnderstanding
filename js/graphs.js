@@ -4,8 +4,10 @@ var pieChart = function(sketch) {
 
     this.pointRadius = 12;
 
-    this.height = 500;
-    this.width = 500;
+    this.height = 2500;
+    this.width = 1000;
+    // ammount to stay away from the edges
+    this.visPadding = 25;
 
     /*
         Data is a {} translation of a data point
@@ -17,7 +19,7 @@ var pieChart = function(sketch) {
         gdp: 500000000
     },{
         name: "Tom",
-        gender: "M",
+        gender: "F",
         age: 20,
         gdp: 500000000
     }]
@@ -78,19 +80,52 @@ var pieChart = function(sketch) {
 */
 
     sketch.setup = function() {
-        sketch.createCanvas(height, width);
+        sketch.createCanvas(width, height);
+        sketch.fetchData(assignJSON);
         //mergeSort(testSort, 0, testSort.length);
     };
 
-    sketch.fetchData = () => {
+    sketch.fetchData = (callback) => {
         //Here we will load the data and store it in
         //sketch.data
+        var client = new XMLHttpRequest();
+        client.open('get', 'data/bills.json');
+        client.onreadystatechange = function() {
+            if (client.readyState == 4 && client.status == "200") {
+                callback(client.responseText);
+            }
+        }
+        client.send(null);
     };
+
+    /* Assigning to the this context because this could really be an inline function */
+    this.assignJSON = function(response){
+        data = JSON.parse(response);
+        for(var i=0; i<data.length; i++){
+            sketch.centralRandom(data[i]);
+        }
+    }
+
+    /**
+     * Assign a random x y near the center in a small square
+     * @param {point} point a point object
+     */
+    sketch.centralRandom = function(point){
+        var randX = Math.floor(Math.random() * (width/4+1));
+        var randY = Math.floor(Math.random() * (height/4+1));
+        var aPoint = {
+            'loc' : [randX, randY],
+            'point' : point,
+        };  
+        activePoints.push(aPoint)
+    }
 
     sketch.draw = function() {
         sketch.background(70, 70, 70);        
         for(var i=0; i<activePoints.length; i++){
             p = activePoints[i];
+            c = (p['point']['gender']==="male") ? sketch.color(3,169,244) : sketch.color(255,64,129);
+            sketch.fill(c);
             sketch.ellipse(p['loc'][0], p['loc'][1], pointRadius, pointRadius);
 
         }
@@ -101,9 +136,13 @@ var pieChart = function(sketch) {
             sketch.mouseX > width || sketch.mouseY > height){
                 sketch.resetLists();
                 filtered = false;
+                leftRow = 1;
+                leftCol = 1;
+                rightRow = 1;
+                rightCol = 1;
         } else if (!filtered){
             sketch.filterData((x)=>{
-                return true;
+                return x['point']['gender']==='male';
             })
             filtered = true;
         }
@@ -121,7 +160,7 @@ var pieChart = function(sketch) {
                 rightGroup.push(activePoints[i]);
             }
         }
-        sketch.postFilterMove(5);
+        sketch.postFilterMove(22);
     };
 
     /**
@@ -131,7 +170,7 @@ var pieChart = function(sketch) {
     sketch.postFilterMove = function(maxCol){
 
         for(var i=0; i<leftGroup.length; i++){
-            leftGroup[i]['loc'] = [20*leftCol, 20*leftRow];
+            leftGroup[i]['loc'] = [20*leftCol + visPadding, 20*leftRow];
             leftCol++;
             if(leftCol>maxCol){
                 leftCol=1;
@@ -139,7 +178,8 @@ var pieChart = function(sketch) {
             }
         }
         for(var i=0; i<rightGroup.length; i++){
-            rightGroup[i]['loc'] = [20*rightCol, width-(20*rightRow)];
+            //rightGroup[i]['loc'] = [length-(20*rightCol), width-(20*rightRow)];
+            rightGroup[i]['loc'] = [(width - 20*rightCol) - visPadding, 20*rightRow];
             rightCol++;
             if(rightCol>maxCol){
                 rightCol=1;
