@@ -2,7 +2,7 @@ var pieChart = function(sketch) {
 
     this.percents = [25, 25, 50];
 
-    this.pointRadius = 12;
+    this.pointRadius = 9;
 
     this.height = 2500;
     this.width = 1000;
@@ -42,6 +42,10 @@ var pieChart = function(sketch) {
     this.leftCol = 1;
     this.rightRow = 1;
     this.rightCol = 1;
+
+    this.resetButton;
+    this.genderFilterButton;
+    
 /*
     this.merge = function(arr, low, mid, high) {
         var left = low;
@@ -81,7 +85,23 @@ var pieChart = function(sketch) {
 
     sketch.setup = function() {
         sketch.createCanvas(width, height);
+        sketch.frameRate(5);
         sketch.fetchData(assignJSON);
+
+        resetButton = sketch.createButton('Reset');
+        resetButton.position(height/2, width/2 - 40);
+        resetButton.size(40, 40);
+        resetButton.mousePressed(sketch.resetLists);
+
+        genderFilterButton = sketch.createButton('Sex');
+        genderFilterButton.position(height/2, width/2);
+        genderFilterButton.size(40, 40);
+        genderFilterButton.mousePressed(function (){
+            sketch.resetLists();
+            sketch.filterData(function (x){
+                return x['point']['gender']==='male';
+            });
+        });
         //mergeSort(testSort, 0, testSort.length);
     };
 
@@ -132,20 +152,17 @@ var pieChart = function(sketch) {
     };
 
     sketch.mouseClicked = function() {
+        /*
         if(sketch.mouseX < 0 || sketch.mouseY < 0 ||
             sketch.mouseX > width || sketch.mouseY > height){
                 sketch.resetLists();
                 filtered = false;
-                leftRow = 1;
-                leftCol = 1;
-                rightRow = 1;
-                rightCol = 1;
         } else if (!filtered){
             sketch.filterData((x)=>{
                 return x['point']['gender']==='male';
             })
             filtered = true;
-        }
+        }*/
     }
 
     /**
@@ -194,9 +211,9 @@ var pieChart = function(sketch) {
             var randY = Math.floor(Math.random() * (height+1));
             activePoints[i]['loc'] = [randX, randY];
         }
-        leftGroup = 1;
+        leftRow = 1;
         leftCol = 1;
-        rightGroup = 1;
+        rightRow = 1;
         rightCol = 1;
         leftGroup = [];
         rightGroup = [];
